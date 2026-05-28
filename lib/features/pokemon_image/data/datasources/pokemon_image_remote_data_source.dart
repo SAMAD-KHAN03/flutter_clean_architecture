@@ -1,0 +1,30 @@
+import 'package:clean_architecture_flutter/features/pokemon_image/data/models/pokemon_image_model.dart';
+import 'package:dio/dio.dart';
+import '../../../../../core/errors/exceptions.dart';
+import '../../../../../core/params/params.dart';
+
+abstract class PokemonImageRemoteDataSource {
+  Future<PokemonImageModel> getPokemonImage({required PokemonImageParams PokemonImageParams});
+}
+
+class PokemonImageRemoteDataSourceImpl implements PokemonImageRemoteDataSource {
+  final Dio dio;
+
+  PokemonImageRemoteDataSourceImpl({required this.dio});
+
+  @override
+  Future<PokemonImageModel> getPokemonImage({required PokemonImageParams PokemonImageParams}) async {
+    final response = await dio.get(
+      'https://pokeapi.co/api/v2/PokemonImage/',
+      queryParameters: {
+        'api_key': 'if needed',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return PokemonImageModel.fromJson(json: response.data);
+    } else {
+      throw ServerException();
+    }
+  }
+}
